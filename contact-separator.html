@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Contact Separator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F4EC;
+    --card:#FFFFFF;
+    --ink:#22261F;
+    --ink-soft:#5B5F55;
+    --line:#DCD5C4;
+    --teal:#2F6F62;
+    --teal-deep:#204B42;
+    --amber:#B8703B;
+    --amber-bg:#F5E6D6;
+    --danger:#9C4A3A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.5;
+    padding:0 20px 80px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  header{padding:48px 0 28px;border-bottom:1px solid var(--line);}
+  h1{
+    font-family:'Source Serif 4',serif;
+    font-weight:600;
+    font-size:2.1rem;
+    margin:0 0 8px;
+    letter-spacing:-0.01em;
+  }
+  header p{color:var(--ink-soft);margin:0;max-width:52ch;font-size:0.98rem;}
+
+  .step{
+    margin-top:32px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:22px 24px;
+  }
+  .step h2{
+    font-family:'Source Serif 4',serif;
+    font-size:1.15rem;
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  .step .hint{color:var(--ink-soft);font-size:0.88rem;margin:0 0 16px;}
+
+  .drop{
+    border:1.5px dashed var(--line);
+    border-radius:5px;
+    padding:20px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    font-size:0.92rem;
+    color:var(--ink-soft);
+  }
+  .drop:hover, .drop.drag{border-color:var(--teal);background:#F1F6F4;}
+  .drop input{display:none;}
+  .drop.filled{border-style:solid;border-color:var(--teal);color:var(--ink);background:#F1F6F4;}
+  .drop .fname{font-weight:600;color:var(--teal-deep);}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:600px){.two-col{grid-template-columns:1fr;}}
+
+  button.primary{
+    background:var(--teal);
+    color:#fff;
+    border:none;
+    padding:12px 22px;
+    border-radius:5px;
+    font-size:0.95rem;
+    font-weight:500;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  button.primary:disabled{background:#B9C4BF;cursor:not-allowed;}
+  button.primary:hover:not(:disabled){background:var(--teal-deep);}
+
+  button.ghost{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:9px 16px;
+    border-radius:5px;
+    font-size:0.85rem;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  button.ghost:hover{border-color:var(--teal);color:var(--teal-deep);}
+
+  .actions{margin-top:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+
+  .summary{
+    display:flex;gap:22px;margin-top:18px;flex-wrap:wrap;
+  }
+  .summary div{font-size:0.85rem;color:var(--ink-soft);}
+  .summary strong{display:block;font-size:1.5rem;font-family:'IBM Plex Mono',monospace;color:var(--ink);font-weight:500;}
+
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:0.9rem;}
+  thead th{
+    text-align:left;
+    font-weight:500;
+    color:var(--ink-soft);
+    font-size:0.76rem;
+    padding:0 10px 8px;
+    border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:10px;border-bottom:1px solid #EFEBE0;vertical-align:top;}
+  tbody tr.matched{background:var(--amber-bg);}
+  .name{font-weight:600;}
+  .meta{color:var(--ink-soft);font-size:0.82rem;font-family:'IBM Plex Mono',monospace;}
+  .tag{
+    display:inline-block;font-size:0.72rem;padding:2px 7px;border-radius:99px;
+    background:var(--amber);color:#fff;font-weight:500;margin-left:6px;
+  }
+  .tag.unique{background:#8B9184;}
+  td.check{text-align:center;width:70px;}
+  input[type=checkbox]{width:17px;height:17px;accent-color:var(--teal);cursor:pointer;}
+
+  .filter-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+  .filter-row button{
+    background:var(--paper);border:1px solid var(--line);padding:6px 12px;
+    border-radius:99px;font-size:0.8rem;cursor:pointer;color:var(--ink-soft);font-family:inherit;
+  }
+  .filter-row button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .empty{color:var(--ink-soft);font-size:0.9rem;padding:24px 0;text-align:center;}
+  .note{
+    margin-top:14px;font-size:0.82rem;color:var(--ink-soft);
+    background:#F1F6F4;border:1px solid #D9E6E1;border-radius:5px;padding:10px 14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Contact Separator</h1>
+    <p>Compare two exported contact files and pull out the ones that belong only to your wife. Everything runs in this browser tab — nothing is uploaded anywhere.</p>
+  </header>
+
+  <div class="step">
+    <h2>1. Upload the files</h2>
+    <p class="hint">Export both as .vcf (vCard) from the Contacts app / iPhone Contacts, and drop them below.</p>
+    <div class="two-col">
+      <div>
+        <div class="drop" id="dropMine">
+          <div class="label">Your Mac contacts<br><span style="font-size:0.8rem;">(the "Last Import" / kept-on-Mac list)</span></div>
+          <input type="file" id="fileMine" accept=".vcf,text/vcard">
+        </div>
+      </div>
+      <div>
+        <div class="drop" id="dropWife">
+          <div class="label">Wife's phone contacts<br><span style="font-size:0.8rem;">(the full, merged list)</span></div>
+          <input type="file" id="fileWife" accept=".vcf,text/vcard">
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="compareBtn" disabled>Compare contacts</button>
+    </div>
+  </div>
+
+  <div class="step" id="resultsStep" style="display:none;">
+    <h2>2. Review the matches</h2>
+    <p class="hint">Contacts found in both files are flagged as likely yours. Uncheck any that are actually hers before exporting.</p>
+
+    <div class="summary">
+      <div><strong id="statTotal">0</strong>total in her list</div>
+      <div><strong id="statMatched">0</strong>flagged as yours</div>
+      <div><strong id="statUnique">0</strong>unique to her</div>
+    </div>
+
+    <div class="filter-row">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="matched">Flagged as yours</button>
+      <button data-filter="unique">Unique to her</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th class="check">Yours?</th><th>Name</th><th>Details</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+
+    <div class="note">Checked rows will be <strong>excluded</strong> from the export below — the exported file keeps everything left unchecked.</div>
+
+    <div class="actions">
+      <button class="primary" id="exportBtn">Download wife-only contacts (.vcf)</button>
+      <button class="ghost" id="checkAllMatched">Check all flagged</button>
+      <button class="ghost" id="uncheckAll">Uncheck all</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let mineCards = [];
+let wifeCards = [];
+let results = []; // {card, raw, matched, exclude}
+let currentFilter = 'all';
+
+function parseVCards(text){
+  const cards = [];
+  const blocks = text.split(/BEGIN:VCARD/i).slice(1);
+  for(const block of blocks){
+    const lines = ('BEGIN:VCARD' + block).split(/\r\n|\n|\r/);
+    let fn = '', tels = [], emails = [];
+    for(const line of lines){
+      const idx = line.indexOf(':');
+      if(idx === -1) continue;
+      const keyPart = line.substring(0, idx).toUpperCase();
+      const val = line.substring(idx+1).trim();
+      if(keyPart.startsWith('FN')) fn = val;
+      else if(keyPart.startsWith('TEL')) tels.push(val.replace(/[^\d]/g,'').slice(-10));
+      else if(keyPart.startsWith('EMAIL')) emails.push(val.toLowerCase());
+    }
+    if(!fn){
+      // fallback: try N field
+      const nLine = lines.find(l => l.toUpperCase().startsWith('N:') || l.toUpperCase().startsWith('N;'));
+      if(nLine){
+        const parts = nLine.split(':')[1]?.split(';') || [];
+        fn = (parts[1] ? parts[1]+' ' : '') + (parts[0] || '');
+        fn = fn.trim();
+      }
+    }
+    const raw = 'BEGIN:VCARD' + block.replace(/END:VCARD[\s\S]*$/i, 'END:VCARD');
+    cards.push({
+      name: fn || '(no name)',
+      normName: normalizeName(fn),
+      tels, emails,
+      raw: raw.trim()
+    });
+  }
+  return cards;
+}
+
+function normalizeName(n){
+  return (n||'').toLowerCase().replace(/[^a-z0-9]/g,'').trim();
+}
+
+function setupDrop(dropId, inputId, store){
+  const drop = document.getElementById(dropId);
+  const input = document.getElementById(inputId);
+  drop.addEventListener('click', () => input.click());
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault();
+    drop.classList.remove('drag');
+    if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0], drop, store);
+  });
+  input.addEventListener('change', () => {
+    if(input.files[0]) handleFile(input.files[0], drop, store);
+  });
+}
+
+function handleFile(file, dropEl, which){
+  const reader = new FileReader();
+  reader.onload = () => {
+    const cards = parseVCards(reader.result);
+    if(which === 'mine') mineCards = cards; else wifeCards = cards;
+    dropEl.classList.add('filled');
+    dropEl.querySelector('.label').innerHTML = `<span class="fname">${file.name}</span><br><span style="font-size:0.8rem;">${cards.length} contacts found</span>`;
+    document.getElementById('compareBtn').disabled = !(mineCards.length && wifeCards.length);
+  };
+  reader.onerror = () => alert('Could not read that file. Please make sure it is a valid .vcf export.');
+  reader.readAsText(file);
+}
+
+setupDrop('dropMine','fileMine','mine');
+setupDrop('dropWife','fileWife','wife');
+
+document.getElementById('compareBtn').addEventListener('click', () => {
+  const mineByName = new Set(mineCards.map(c => c.normName).filter(Boolean));
+  const mineTels = new Set(mineCards.flatMap(c => c.tels).filter(t => t.length >= 7));
+  const mineEmails = new Set(mineCards.flatMap(c => c.emails).filter(Boolean));
+
+  results = wifeCards.map(card => {
+    const nameMatch = card.normName && mineByName.has(card.normName);
+    const telMatch = card.tels.some(t => t.length >= 7 && mineTels.has(t));
+    const emailMatch = card.emails.some(e => mineEmails.has(e));
+    const matched = nameMatch || telMatch || emailMatch;
+    return { card, matched, exclude: matched };
+  });
+
+  renderResults();
+  document.getElementById('resultsStep').style.display = 'block';
+  document.getElementById('resultsStep').scrollIntoView({behavior:'smooth'});
+});
+
+function renderResults(){
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = '';
+  let matchedCount = 0;
+  const filtered = results.filter(r => {
+    if(r.matched) matchedCount++;
+    if(currentFilter === 'matched') return r.matched;
+    if(currentFilter === 'unique') return !r.matched;
+    return true;
+  });
+
+  document.getElementById('statTotal').textContent = results.length;
+  document.getElementById('statMatched').textContent = matchedCount;
+  document.getElementById('statUnique').textContent = results.length - matchedCount;
+
+  if(filtered.length === 0){
+    tbody.innerHTML = '<tr><td colspan="3" class="empty">No contacts in this view.</td></tr>';
+    return;
+  }
+
+  for(const r of filtered){
+    const tr = document.createElement('tr');
+    if(r.matched) tr.classList.add('matched');
+    const details = [r.card.tels.filter(Boolean).join(', '), r.card.emails.join(', ')].filter(Boolean).join(' · ');
+    tr.innerHTML = `
+      <td class="check"><input type="checkbox" ${r.exclude ? 'checked' : ''} data-idx="${results.indexOf(r)}"></td>
+      <td><span class="name">${escapeHtml(r.card.name)}</span>${r.matched ? '<span class="tag">flagged as yours</span>' : '<span class="tag unique">unique to her</span>'}</td>
+      <td class="meta">${escapeHtml(details) || '—'}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  tbody.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      results[parseInt(cb.dataset.idx)].exclude = cb.checked;
+    });
+  });
+}
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.querySelectorAll('.filter-row button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-row button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderResults();
+  });
+});
+
+document.getElementById('checkAllMatched').addEventListener('click', () => {
+  results.forEach(r => { if(r.matched) r.exclude = true; });
+  renderResults();
+});
+document.getElementById('uncheckAll').addEventListener('click', () => {
+  results.forEach(r => { r.exclude = false; });
+  renderResults();
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const keep = results.filter(r => !r.exclude);
+  if(keep.length === 0){
+    alert('Everything is checked for exclusion — nothing left to export.');
+    return;
+  }
+  const vcf = keep.map(r => r.card.raw).join('\r\n') + '\r\n';
+  const blob = new Blob([vcf], {type:'text/vcard'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'wife-contacts-only.vcf';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>
