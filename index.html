@@ -144,7 +144,10 @@
 <div class="wrap">
   <header>
     <h1>Contact Separator</h1>
-    <p>Compare two exported contact files and pull out the ones that belong only to your wife. Everything runs in this browser tab — nothing is uploaded anywhere.</p>
+    <p>Compare two exported contact files and pull out the ones that belong only to your wife. Everything runs in this browser tab; nothing is uploaded anywhere.</p>
+
+
+    Developed by: Ali Ceesay
   </header>
 
   <div class="step">
@@ -153,13 +156,13 @@
     <div class="two-col">
       <div>
         <div class="drop" id="dropMine">
-          <div class="label">Your Mac contacts<br><span style="font-size:0.8rem;">(the "Last Import" / kept-on-Mac list)</span></div>
+          <div class="label">phone1 contacts<br><span style="font-size:0.8rem;">(the "Last Import" / kept-on-Mac list)</span></div>
           <input type="file" id="fileMine" accept=".vcf,text/vcard">
         </div>
       </div>
       <div>
         <div class="drop" id="dropWife">
-          <div class="label">Wife's phone contacts<br><span style="font-size:0.8rem;">(the full, merged list)</span></div>
+          <div class="label">phone2 contacts<br><span style="font-size:0.8rem;">(the full, merged list)</span></div>
           <input type="file" id="fileWife" accept=".vcf,text/vcard">
         </div>
       </div>
@@ -192,7 +195,7 @@
       <tbody id="rows"></tbody>
     </table>
 
-    <div class="note">Checked rows will be <strong>excluded</strong> from the export below — the exported file keeps everything left unchecked.</div>
+    <div class="note">Checked rows will be <strong>excluded</strong> from the export; the exported file keeps everything left unchecked.</div>
 
     <div class="actions">
       <button class="primary" id="exportBtn">Download wife-only contacts (.vcf)</button>
